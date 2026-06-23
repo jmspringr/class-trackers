@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MTH 118 Course Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Newsreader:wght@400;500&family=Spline+Sans+Mono:wght@500;600&display=swap');
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: #f3efe6;
+    color: #221f1a;
+    font-family: 'Newsreader', Georgia, serif;
+  }
+  .mono { font-family: 'Spline Sans Mono', ui-monospace, monospace; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 18px 80px; }
+  .row { transition: background 140ms ease; }
+  .row:hover { background: rgba(0,0,0,0.025); }
+  .box { transition: all 130ms ease; }
+  .box:active { transform: scale(0.9); }
+  @keyframes pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  .check { animation: pop 200ms ease; }
+  button.reset {
+    margin-top: 14px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #a59a86; background: none; border: none; padding: 0; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="root"></div>
+
+<script>
+// ---- Course data (from the Summer 2026 calendar) ----
+const WEEKS = [
+  { n: 1, label: "Week 1", range: "Jun 1 – 5", items: [
+    { id: "w1-read", name: "Read: Quantitative Reasoning 1st Day Presentation", type: "reading", due: "2026-06-01" },
+    { id: "w1-forum", name: "Student Introduction Forum Activity", type: "activity", due: "2026-06-02" },
+    { id: "w1-orient", name: "MyLab Math Orientation", type: "activity", due: "2026-06-02" },
+    { id: "w1-mindset", name: "Mindset Activity", type: "activity", due: "2026-06-03" },
+    { id: "w1-desmos", name: "Desmos Scientific Calculator Activity", type: "activity", due: "2026-06-03" },
+    { id: "w1-firstday", name: "First Day Activity", type: "activity", due: "2026-06-03" },
+    { id: "w1-written", name: "Written Activity", type: "activity", due: "2026-06-04" },
+    { id: "w1-hw2a", name: "HW 2A", type: "hw", due: "2026-06-05" },
+    { id: "w1-hw2b", name: "HW 2B", type: "hw", due: "2026-06-05" },
+  ]},
+  { n: 2, label: "Week 2", range: "Jun 8 – 12", items: [
+    { id: "w2-hw2c", name: "HW 2C", type: "hw", due: "2026-06-08" },
+    { id: "w2-act1", name: "Activity 1 (Ch 2C)", type: "activity", due: "2026-06-08" },
+    { id: "w2-hw3a", name: "HW 3A", type: "hw", due: "2026-06-09" },
+    { id: "w2-hw3b", name: "HW 3B", type: "hw", due: "2026-06-10" },
+    { id: "w2-act2", name: "Activity 2 (Ch 3B)", type: "activity", due: "2026-06-11" },
+    { id: "w2-quiz", name: "Quiz Ch2 & Ch3", type: "quiz", due: "2026-06-12" },
+    { id: "w2-proj1", name: "Project 1 (Ch 2C)", type: "project", due: "2026-06-12" },
+  ]},
+  { n: 3, label: "Week 3", range: "Jun 15 – 19", items: [
+    { id: "w3-hw8a", name: "HW 8A", type: "hw", due: "2026-06-15" },
+    { id: "w3-hw8b", name: "HW 8B", type: "hw", due: "2026-06-16" },
+    { id: "w3-act3", name: "Activity 3 (Ch 8A)", type: "activity", due: "2026-06-16" },
+    { id: "w3-hw9a", name: "HW 9A", type: "hw", due: "2026-06-17" },
+    { id: "w3-act4", name: "Activity 4 (Ch 9A)", type: "activity", due: "2026-06-18" },
+    { id: "w3-act5", name: "Activity 5 (Ch 9A)", type: "activity", due: "2026-06-18" },
+    { id: "w3-holiday", name: "Juneteenth Holiday — no assignment", type: "milestone", due: "2026-06-19" },
+  ]},
+  { n: 4, label: "Week 4", range: "Jun 22 – 26", items: [
+    { id: "w4-hw9b", name: "HW 9B", type: "hw", due: "2026-06-22" },
+    { id: "w4-act6", name: "Activity 6 (Ch 9B)", type: "activity", due: "2026-06-23" },
+    { id: "w4-act7", name: "Activity 7 (Ch 9B)", type: "activity", due: "2026-06-23" },
+    { id: "w4-hw9c", name: "HW 9C", type: "hw", due: "2026-06-24" },
+    { id: "w4-act8", name: "Activity 8 (Ch 9C)", type: "activity", due: "2026-06-25" },
+    { id: "w4-act9", name: "Activity 9 (Ch 9C)", type: "activity", due: "2026-06-25" },
+    { id: "w4-quiz", name: "Quiz Ch8 & Ch9", type: "quiz", due: "2026-06-26" },
+    { id: "w4-proj2", name: "Project 2", type: "project", due: "2026-06-26" },
+  ]},
+  { n: 5, label: "Week 5", range: "Jun 29 – Jul 3", items: [
+    { id: "w5-hw4a", name: "HW 4A", type: "hw", due: "2026-06-29" },
+    { id: "w5-act10", name: "Activity 10 (Ch 4A)", type: "activity", due: "2026-06-30" },
+    { id: "w5-hw4b", name: "HW 4B", type: "hw", due: "2026-07-01" },
+    { id: "w5-act11", name: "Activity 11 (Ch 4B)", type: "activity", due: "2026-07-02" },
+    { id: "w5-hw4c", name: "HW 4C", type: "hw", due: "2026-07-03" },
+  ]},
+  { n: 6, label: "Week 6", range: "Jul 6 – 10", items: [
+    { id: "w6-holiday", name: "Independence Day Holiday — no assignment", type: "milestone", due: "2026-07-06" },
+    { id: "w6-hw4d", name: "HW 4D", type: "hw", due: "2026-07-07" },
+    { id: "w6-act12", name: "Activity 12 (Ch 4D)", type: "activity", due: "2026-07-08" },
+    { id: "w6-hw4e", name: "HW 4E", type: "hw", due: "2026-07-09" },
+    { id: "w6-act13", name: "Activity 13 (Ch 4E)", type: "activity", due: "2026-07-09" },
+    { id: "w6-quiz", name: "Quiz Ch4", type: "quiz", due: "2026-07-10" },
+    { id: "w6-proj3", name: "Project 3", type: "project", due: "2026-07-10" },
+  ]},
+  { n: 7, label: "Week 7", range: "Jul 13 – 17", items: [
+    { id: "w7-withdraw", name: "Last day to withdraw", type: "milestone", due: "2026-07-13" },
+    { id: "w7-hw5a", name: "HW 5A", type: "hw", due: "2026-07-13" },
+    { id: "w7-hw5b", name: "HW 5B", type: "hw", due: "2026-07-14" },
+    { id: "w7-hw5c", name: "HW 5C", type: "hw", due: "2026-07-15" },
+    { id: "w7-act14", name: "Activity 14 (Ch 5C)", type: "activity", due: "2026-07-15" },
+    { id: "w7-hw5e", name: "HW 5E", type: "hw", due: "2026-07-16" },
+    { id: "w7-act15", name: "Activity 15 (Ch 5E)", type: "activity", due: "2026-07-16" },
+    { id: "w7-proj4", name: "Project 4", type: "project", due: "2026-07-17" },
+  ]},
+  { n: 8, label: "Week 8", range: "Jul 20 – 24", items: [
+    { id: "w8-hw6a", name: "HW 6A", type: "hw", due: "2026-07-20" },
+    { id: "w8-act16", name: "Activity 16 (Ch 6A)", type: "activity", due: "2026-07-20" },
+    { id: "w8-act17", name: "Activity 17 (Ch 6A)", type: "activity", due: "2026-07-20" },
+    { id: "w8-hw6b", name: "HW 6B", type: "hw", due: "2026-07-21" },
+    { id: "w8-hw7a", name: "HW 7A", type: "hw", due: "2026-07-22" },
+    { id: "w8-hw7b", name: "HW 7B", type: "hw", due: "2026-07-23" },
+    { id: "w8-quiz", name: "Quiz Ch5, Ch6 & Ch7", type: "quiz", due: "2026-07-24" },
+    { id: "w8-proj5", name: "Project 5", type: "project", due: "2026-07-24" },
+    { id: "w8-alldue", name: "All Assignments Due", type: "milestone", due: "2026-07-24" },
+  ]},
+];
+
+// Items already completed (used only on first ever load)
+const DEFAULT_DONE = ["w1-read", "w1-forum", "w1-orient", "w1-mindset", "w1-desmos", "w1-written", "w2-act1"];
+
+const STORAGE_KEY = "mth118-progress";
+
+const TYPE = {
+  hw:        { label: "HW",       fg: "#7a4a12", bg: "#f4e3c8", dot: "#b9791f" },
+  activity:  { label: "Activity", fg: "#1f5a4a", bg: "#d9ece2", dot: "#2f8568" },
+  quiz:      { label: "Quiz",     fg: "#6b2230", bg: "#f3d7dc", dot: "#b03a4d" },
+  project:   { label: "Project",  fg: "#33306e", bg: "#dcd9f2", dot: "#5b54c4" },
+  reading:   { label: "Read",     fg: "#4a4540", bg: "#e6e1d6", dot: "#8a8278" },
+  milestone: { label: "Note",     fg: "#5a5046", bg: "#ece6da", dot: "#9c9080" },
+};
+
+const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function fmtDue(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return WEEKDAY[dt.getDay()] + " " + m + "/" + d;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---- Persistence (localStorage) ----
+function loadDone() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  // First ever load: seed with the items already completed
+  const seed = {};
+  DEFAULT_DONE.forEach((id) => { seed[id] = true; });
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(seed)); } catch (e) {}
+  return seed;
+}
+
+function saveDone() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(done)); } catch (e) {}
+}
+
+let done = loadDone();
+
+const ALL_ITEMS = WEEKS.flatMap((w) => w.items.filter((i) => i.type !== "milestone"));
+const TOTAL = ALL_ITEMS.length;
+
+function todayKey() {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return d.getFullYear() + "-" + m + "-" + day;
+}
+
+// ---- Render ----
+function render() {
+  const tk = todayKey();
+  const completed = ALL_ITEMS.filter((i) => done[i.id]).length;
+  const pct = TOTAL ? Math.round((completed / TOTAL) * 100) : 0;
+
+  let html = "";
+
+  // Header
+  html += '<div style="margin-bottom:6px">' +
+    '<div class="mono" style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#a59a86">Stark State · Summer 2026</div>' +
+    '<h1 style="font-family:\'Fraunces\',serif;font-weight:700;font-size:34px;line-height:1.05;margin:6px 0 2px">MTH 118 Tracker</h1>' +
+    '<div style="font-size:15px;color:#6f675b">Quantitative Reasoning · Dr. Khazafi</div>' +
+  '</div>';
+
+  // Progress card
+  html += '<div style="margin:20px 0 26px;padding:18px 20px;background:#fbf9f3;border:1px solid #e3dccd;border-radius:14px">' +
+    '<div style="display:flex;align-items:baseline;justify-content:space-between">' +
+      '<div style="font-family:\'Fraunces\',serif;font-weight:700;font-size:30px">' + pct + '<span style="font-size:16px;color:#9a8f7d">%</span></div>' +
+      '<div class="mono" style="font-size:13px;color:#6f675b">' + completed + ' / ' + TOTAL + ' done</div>' +
+    '</div>' +
+    '<div style="margin-top:12px;height:8px;background:#eae3d4;border-radius:99px;overflow:hidden">' +
+      '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#2f8568,#3fae84);border-radius:99px;transition:width 320ms ease"></div>' +
+    '</div>' +
+    '<button class="reset mono" id="resetBtn">Reset all</button>' +
+  '</div>';
+
+  // Weeks
+  WEEKS.forEach((wk) => {
+    const counted = wk.items.filter((i) => i.type !== "milestone");
+    const wkDone = counted.filter((i) => done[i.id]).length;
+    const allDone = counted.length > 0 && wkDone === counted.length;
+
+    html += '<section style="margin-bottom:26px">';
+    html += '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #221f1a">' +
+      '<h2 style="font-family:\'Fraunces\',serif;font-weight:600;font-size:19px;margin:0">' + esc(wk.label) + '</h2>' +
+      '<span class="mono" style="font-size:12px;color:#9a8f7d">' + esc(wk.range) + '</span>' +
+      '<span class="mono" style="margin-left:auto;font-size:12px;color:' + (allDone ? "#2f8568" : "#9a8f7d") + '">' +
+        (allDone ? "✓ complete" : wkDone + "/" + counted.length) +
+      '</span>' +
+    '</div>';
+
+    wk.items.forEach((it) => {
+      const t = TYPE[it.type];
+      const isDone = !!done[it.id];
+      const isMilestone = it.type === "milestone";
+      const overdue = !isDone && !isMilestone && it.due < tk;
+
+      html += '<div class="' + (isMilestone ? "" : "row") + '"' +
+        (isMilestone ? "" : ' data-id="' + esc(it.id) + '"') +
+        ' style="display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:9px;cursor:' +
+        (isMilestone ? "default" : "pointer") + ';opacity:' + (isMilestone ? "0.72" : "1") + '">';
+
+      // checkbox / marker
+      if (isMilestone) {
+        html += '<div style="width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#b3a78f;font-size:14px">◇</div>';
+      } else {
+        html += '<div class="box" style="width:22px;height:22px;flex-shrink:0;border-radius:6px;border:' +
+          (isDone ? "none" : "2px solid #cbbfa8") + ';background:' + (isDone ? "#2f8568" : "#fff") +
+          ';display:flex;align-items:center;justify-content:center">' +
+          (isDone ? '<span class="check" style="color:#fff;font-size:13px;font-weight:700">✓</span>' : "") +
+        '</div>';
+      }
+
+      // name
+      html += '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:15.5px;line-height:1.25;text-decoration:' + (isDone ? "line-through" : "none") +
+        ';color:' + (isDone ? "#a89e8c" : "#221f1a") + ';font-style:' + (isMilestone ? "italic" : "normal") + '">' +
+        esc(it.name) + '</div>' +
+      '</div>';
+
+      // due + badge
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
+        (overdue ? '<span class="mono" style="font-size:10px;color:#b03a4d;letter-spacing:0.06em">OVERDUE</span>' : "") +
+        '<span class="mono" style="font-size:11.5px;color:#9a8f7d">' + esc(fmtDue(it.due)) + '</span>' +
+        (isMilestone ? "" : '<span class="mono" style="font-size:10px;font-weight:600;letter-spacing:0.04em;padding:3px 7px;border-radius:5px;color:' +
+          t.fg + ';background:' + t.bg + '">' + esc(t.label) + '</span>') +
+      '</div>';
+
+      html += '</div>';
+    });
+
+    html += '</section>';
+  });
+
+  html += '<div class="mono" style="text-align:center;font-size:11px;color:#b3a78f;margin-top:30px;letter-spacing:0.06em">Progress saves automatically</div>';
+
+  const root = document.getElementById("root");
+  root.innerHTML = html;
+
+  // Wire up toggles via event delegation
+  root.querySelectorAll(".row[data-id]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const id = el.getAttribute("data-id");
+      if (done[id]) delete done[id]; else done[id] = true;
+      saveDone();
+      render();
+    });
+  });
+
+  const rb = document.getElementById("resetBtn");
+  if (rb) rb.addEventListener("click", () => {
+    if (window.confirm("Clear every checkmark and start fresh?")) {
+      done = {};
+      saveDone();
+      render();
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
