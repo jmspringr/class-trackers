@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Trackers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6; --paper-2:#ece4d6; --ink:#2a2520; --ink-soft:#6b6157;
+    --line:#d8cdb9; --card:#fbf8f1; --accent:#9a3b2e; --green:#2f8568;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(circle at 12% 8%, rgba(154,59,46,.05), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(47,133,104,.05), transparent 42%),
+      var(--paper);
+    color:var(--ink); font-family:'DM Sans',sans-serif; line-height:1.5;
+    padding:48px 18px 80px; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:620px;margin:0 auto}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:8px}
+  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.8rem;line-height:1;letter-spacing:-.01em}
+  h1 em{font-style:italic;font-weight:500;color:var(--ink-soft)}
+  .sub{color:var(--ink-soft);font-size:.95rem;margin-top:10px;margin-bottom:30px}
+
+  a.card{
+    display:block;text-decoration:none;color:inherit;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:20px 22px;margin-bottom:14px;
+    box-shadow:0 1px 0 #fff inset, 0 8px 24px rgba(42,37,32,.04);
+    transition:border-color .18s,transform .08s;position:relative;overflow:hidden;
+  }
+  a.card:hover{border-color:#c9bca5}
+  a.card:active{transform:scale(.997)}
+  a.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+  .toprow{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .code{font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem}
+  .name{color:var(--ink-soft);font-size:.9rem}
+  .pct{font-family:'Fraunces',serif;font-weight:800;font-size:1.7rem;color:var(--c)}
+  .pct span{font-size:.85rem;color:var(--ink-soft);font-weight:500}
+  .bar{height:8px;background:var(--paper-2);border-radius:99px;overflow:hidden;margin-top:14px;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;border-radius:99px;background:var(--c);transition:width .5s cubic-bezier(.22,1,.36,1);width:0}
+  .count{font-size:.8rem;color:var(--ink-soft);margin-top:8px}
+  footer{margin-top:30px;text-align:center;color:var(--ink-soft);font-size:.76rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Stark State College &middot; Summer 2026</div>
+  <h1>Class <em>trackers</em></h1>
+  <p class="sub">Your semester at a glance. Tap a course to open its tracker.</p>
+
+  <div id="cards"></div>
+
+  <footer>Progress is stored on this device and syncs with each tracker.</footer>
+</div>
+
+<script>
+const COURSES = [
+  { code:"MTH 118", name:"Quantitative Reasoning", file:"mth118-tracker.html", key:"mth118-progress", total:56, c:"#2f8568" },
+  { code:"PSY 121", name:"General Psychology", file:"psy121-tracker.html", key:"psy121-progress", total:30, c:"#9a3b2e" },
+];
+
+function doneCount(key){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return 0;
+    const obj = JSON.parse(raw);
+    return Object.values(obj).filter(Boolean).length;
+  }catch(e){ return 0; }
+}
+
+const cards = COURSES.map(co=>{
+  const done = Math.min(doneCount(co.key), co.total);
+  const pct = co.total ? Math.round(done/co.total*100) : 0;
+  return '<a class="card" href="'+co.file+'" style="--c:'+co.c+'">'
+    + '<div class="toprow">'
+    +   '<div><div class="code">'+co.code+'</div><div class="name">'+co.name+'</div></div>'
+    +   '<div class="pct">'+pct+'<span>%</span></div>'
+    + '</div>'
+    + '<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    + '<div class="count">'+done+' of '+co.total+' done</div>'
+  + '</a>';
+}).join("");
+
+document.getElementById("cards").innerHTML = cards;
+</script>
+</body>
+</html>
