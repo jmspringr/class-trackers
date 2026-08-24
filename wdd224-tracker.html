@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WDD224 Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6;
+    --paper-2:#e9e1d2;
+    --ink:#23262b;
+    --ink-soft:#69625a;
+    --line:#d8cdb9;
+    --card:#fbf8f1;
+    --accent:#1f7a8c;
+    --read:#8a7d68;
+    --quiz:#b07d1e;
+    --disc:#3b6ea5;
+    --setup:#6b5b95;
+    --lab:#1f7a8c;
+    --exam:#9a3b2e;
+    --proj:#5b54c4;
+    --note:#9c9080;
+    --done-bg:#e6f2f4;
+    --overdue:#b03a4d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(circle at 10% 6%, rgba(31,122,140,.06), transparent 42%),
+      radial-gradient(circle at 90% 94%, rgba(176,125,30,.05), transparent 44%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'DM Sans',sans-serif;
+    line-height:1.5;
+    padding:28px 18px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+  .mono{font-family:'Spline Sans Mono',ui-monospace,monospace}
+
+  header{margin-bottom:24px}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:6px}
+  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;letter-spacing:-.01em}
+  h1 em{font-style:italic;font-weight:500;color:var(--ink-soft)}
+  .sub{color:var(--ink-soft);font-size:.92rem;margin-top:8px}
+
+  .summary{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px 22px;
+    margin:22px 0 14px;
+    box-shadow:0 1px 0 #fff inset, 0 8px 24px rgba(35,38,43,.04);
+  }
+  .bigrow{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+  .pct{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:800;line-height:.9;color:var(--accent)}
+  .pct span{font-size:1.1rem;color:var(--ink-soft);font-weight:500}
+  .count{text-align:right;color:var(--ink-soft);font-size:.88rem;line-height:1.4}
+  .count b{color:var(--ink);font-size:1.05rem}
+  .bar{height:9px;background:var(--paper-2);border-radius:99px;overflow:hidden;margin:14px 0 4px;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#43b3c2);border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1);width:0}
+
+  .next{
+    margin-top:16px;padding:12px 14px;border-radius:11px;
+    background:linear-gradient(180deg,#e9f3f5,#e1eff2);
+    border:1px solid #cbe2e6;display:flex;align-items:center;gap:11px;
+  }
+  .next .dot{width:9px;height:9px;border-radius:99px;background:var(--accent);flex:0 0 auto;box-shadow:0 0 0 4px rgba(31,122,140,.16)}
+  .next .txt{font-size:.88rem}
+  .next .txt b{color:var(--accent)}
+
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+  .chip{font-size:.72rem;font-weight:600;padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--paper);display:flex;gap:6px;align-items:center}
+  .chip .sw{width:8px;height:8px;border-radius:2px}
+  .chip .n{color:var(--ink-soft);font-weight:500}
+
+  .week{margin-top:22px}
+  .week-head{display:flex;align-items:baseline;gap:10px;padding:0 4px 9px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .wk-no{font-family:'Fraunces',serif;font-size:1.12rem;font-weight:600}
+  .wk-topic{font-size:.82rem;color:var(--ink-soft);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wk-due{font-size:.76rem;color:var(--ink-soft);margin-left:auto;letter-spacing:.02em;flex:0 0 auto}
+  .wk-prog{font-size:.74rem;color:var(--ink-soft);font-weight:600;flex:0 0 auto}
+  .now-tag{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#fff;background:var(--accent);padding:3px 8px;border-radius:99px;flex:0 0 auto}
+  .week.current .week-head{border-color:var(--accent)}
+
+  .item{
+    display:flex;align-items:flex-start;gap:13px;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:13px 15px;margin-bottom:8px;cursor:pointer;
+    transition:background .18s,border-color .18s,transform .08s;
+    position:relative;overflow:hidden;
+  }
+  .item:active{transform:scale(.996)}
+  .item:hover{border-color:#c9bca5}
+  .item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+  .box{
+    margin-top:1px;width:22px;height:22px;border-radius:7px;border:2px solid var(--c);
+    flex:0 0 auto;display:grid;place-items:center;transition:background .18s;background:transparent;
+  }
+  .box svg{width:13px;height:13px;stroke:#fff;stroke-width:3.4;fill:none;opacity:0;transform:scale(.5);transition:.18s}
+  .meta{flex:1;min-width:0}
+  .ttl{font-weight:600;font-size:.96rem;letter-spacing:-.01em}
+  .tags{margin-top:3px;font-size:.76rem;color:var(--ink-soft);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .typetag{font-weight:600;color:var(--c)}
+  .pts{padding-left:8px;border-left:1px solid var(--line)}
+  .overdue{color:var(--overdue);font-weight:700;letter-spacing:.04em;font-size:.68rem}
+
+  .item.done{background:var(--done-bg);border-color:#c4dfe4}
+  .item.done .box{background:var(--c)}
+  .item.done .box svg{opacity:1;transform:scale(1)}
+  .item.done .ttl{text-decoration:line-through;color:var(--ink-soft)}
+
+  .note-item{
+    display:flex;align-items:center;gap:12px;padding:9px 15px;margin-bottom:8px;
+    border-radius:12px;border:1px dashed var(--line);background:transparent;opacity:.85;
+  }
+  .note-item .diamond{color:var(--note);font-size:.8rem;flex:0 0 auto}
+  .note-item .ntxt{font-size:.85rem;font-style:italic;color:var(--ink-soft);flex:1}
+  .note-item .ndue{font-size:.72rem;color:var(--note)}
+
+  footer{margin-top:34px;text-align:center;color:var(--ink-soft);font-size:.78rem}
+  .reset{margin-top:10px;background:none;border:1px solid var(--line);color:var(--ink-soft);font-family:inherit;font-size:.76rem;padding:7px 14px;border-radius:99px;cursor:pointer;transition:.18s}
+  .reset:hover{border-color:var(--accent);color:var(--accent)}
+  .saving{font-size:.72rem;color:var(--ink-soft);opacity:0;transition:opacity .3s}
+  .saving.show{opacity:1}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Stark State College &middot; Fall 2026</div>
+    <h1>WDD224 <em>tracker</em></h1>
+    <p class="sub">Active Server Page Development &middot; Prof. Morosko. Labs due <b>7:00am Tuesdays</b>; final project due Thu, Dec 10. Tap anything to check it off &mdash; progress saves automatically.</p>
+  </header>
+
+  <div class="summary">
+    <div class="bigrow">
+      <div class="pct" id="pct">0<span>%</span></div>
+      <div class="count"><b id="doneN">0</b> of <span id="totN">0</span> tasks done<br><span id="ptsN" class="mono"></span></div>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="next" id="nextBox"></div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div id="weeks"></div>
+
+  <footer>
+    <div class="saving" id="saving">saved</div>
+    <button class="reset" id="reset">Reset all checkmarks</button>
+  </footer>
+</div>
+
+<script>
+const TYPE = {
+  setup:   {label:"Setup",   c:"var(--setup)", sw:"#6b5b95"},
+  lab:     {label:"Lab",     c:"var(--lab)",   sw:"#1f7a8c"},
+  project: {label:"Project", c:"var(--proj)",  sw:"#5b54c4"},
+};
+
+// Built from the Fall 2026 course calendar in the WDD224 syllabus.
+// Labs are due 7:00am on the listed Tuesday; the final project is due Thu 12/10.
+const DUE_TIME = "T07:00:00";
+const WEEKS = [
+  {wk:1,  topic:"Hello World! & environment setup", due:"2026-09-01", items:[
+    {id:"w1-setup", type:"setup", title:"Install Visual Studio 2026 (ASP.NET workload)"},
+    {id:"w1-lab",   type:"lab",   title:"Lab 1 — Hello World!"},
+    {id:"w1-note",  type:"milestone", title:"Finish Lab 1 on time or risk being dropped as “Never Attend” — affects financial aid", due:"2026-09-01"},
+  ]},
+  {wk:2,  topic:"ASP.NET basics", due:"2026-09-08", items:[
+    {id:"w2-lab", type:"lab", title:"Lab 2"},
+  ]},
+  {wk:3,  topic:"Validation", due:"2026-09-15", items:[
+    {id:"w3-lab", type:"lab", title:"Lab 3 — Validation"},
+  ]},
+  {wk:4,  topic:"Databases", due:"2026-09-22", items:[
+    {id:"w4-lab", type:"lab", title:"Lab 4 — Database"},
+  ]},
+  {wk:5,  topic:"Entity Framework", due:"2026-09-29", items:[
+    {id:"w5-lab", type:"lab", title:"Lab 5 — Entity Framework"},
+  ]},
+  {wk:6,  topic:"SignalR", due:"2026-10-06", items:[
+    {id:"w6-lab", type:"lab", title:"Lab 6 — SignalR"},
+  ]},
+  {wk:7,  topic:"ASP.NET Core", due:"2026-10-13", items:[
+    {id:"w7-lab", type:"lab", title:"Lab 7 — Core"},
+  ]},
+  {wk:8,  topic:"ASP.NET Core", due:"2026-10-20", items:[
+    {id:"w8-lab", type:"lab", title:"Lab 8 — Core"},
+  ]},
+  {wk:9,  topic:"ASP.NET Core", due:"2026-10-27", items:[
+    {id:"w9-lab",  type:"lab", title:"Lab 9 — Core"},
+    {id:"w9-note", type:"milestone", title:"No lab due the week of Nov 3 — catch-up / get-ahead buffer", due:"2026-11-03"},
+  ]},
+  {wk:11, topic:"Route Parameters", due:"2026-11-10", items:[
+    {id:"w11-lab",  type:"lab", title:"Lab 10 — Route Parameters"},
+    {id:"w11-note", type:"milestone", title:"Last day to withdraw — Mon, Nov 16", due:"2026-11-16"},
+  ]},
+  {wk:12, topic:"ASP.NET Core Database", due:"2026-11-17", items:[
+    {id:"w12-lab", type:"lab", title:"Lab 11 — ASP.NET Core Database"},
+  ]},
+  {wk:13, topic:"Blazor", due:"2026-11-24", items:[
+    {id:"w13-lab", type:"lab", title:"Lab 12 — Blazor"},
+  ]},
+  {wk:"14–15", topic:"Final Project (Finals Week)", due:"2026-12-10", items:[
+    {id:"final-proj", type:"project", title:"Final Project"},
+  ]},
+];
+
+const ALL = WEEKS.flatMap(w => w.items).filter(i => i.type !== "milestone");
+const TOTAL_PTS = ALL.reduce((s,i)=>s+(i.pts||0),0);
+const STORE_KEY = "wdd224-progress";
+let state = {};
+
+const fmtDue = iso => {
+  const d = new Date(iso + DUE_TIME);
+  return d.toLocaleDateString("en-US", {weekday:"short", month:"short", day:"numeric"});
+};
+const todayKey = () => {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+};
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function load(){
+  try{ const r = localStorage.getItem(STORE_KEY); if(r) state = JSON.parse(r); }
+  catch(e){ state = {}; }
+  render();
+}
+
+let saveTimer;
+function save(){
+  try{
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    const s = document.getElementById("saving");
+    s.classList.add("show");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>s.classList.remove("show"), 1100);
+  }catch(e){ console.error("save failed", e); }
+}
+
+function toggle(id){
+  if(state[id]) delete state[id]; else state[id] = true;
+  save();
+  render();
+}
+
+function render(){
+  const now = new Date();
+  const tk = todayKey();
+  const doneItems = ALL.filter(i => state[i.id]);
+  const doneCount = doneItems.length;
+  const total = ALL.length;
+  const pct = total ? Math.round(doneCount/total*100) : 0;
+  const donePts = doneItems.reduce((s,i)=>s+(i.pts||0),0);
+
+  document.getElementById("pct").innerHTML = pct + '<span>%</span>';
+  document.getElementById("doneN").textContent = doneCount;
+  document.getElementById("totN").textContent = total;
+  document.getElementById("barFill").style.width = pct + "%";
+  document.getElementById("ptsN").textContent = TOTAL_PTS ? (donePts + " / " + TOTAL_PTS + " graded pts") : "";
+
+  // Next up: first week with an incomplete task whose due date hasn't passed
+  let nextWk = null;
+  for(const w of WEEKS){
+    const due = new Date(w.due + DUE_TIME);
+    const incomplete = w.items.some(i => i.type !== "milestone" && !state[i.id]);
+    if(incomplete && due >= new Date(now.toDateString())){ nextWk = w; break; }
+  }
+  const nb = document.getElementById("nextBox");
+  if(nextWk){
+    const remaining = nextWk.items.filter(i => i.type !== "milestone" && !state[i.id]).length;
+    const days = Math.ceil((new Date(nextWk.due + DUE_TIME) - now)/86400000);
+    const dayTxt = days<=0 ? "due today" : days===1 ? "due tomorrow" : "in " + days + " days";
+    nb.innerHTML = '<span class="dot"></span><span class="txt">Next up: <b>' + remaining + ' task' + (remaining>1?'s':'') + '</b> for Week ' + nextWk.wk + ', ' + dayTxt + ' (' + fmtDue(nextWk.due) + ').</span>';
+    nb.style.display = "flex";
+  } else if(doneCount === total){
+    nb.innerHTML = '<span class="dot" style="background:#2f8568;box-shadow:0 0 0 4px rgba(47,133,104,.16)"></span><span class="txt">Everything is checked off. Nice work this semester.</span>';
+    nb.style.display = "flex";
+  } else {
+    nb.style.display = "none";
+  }
+
+  // Type chips
+  const chips = document.getElementById("chips");
+  chips.innerHTML = Object.entries(TYPE).map(([k,t]) => {
+    const items = ALL.filter(i => i.type === k);
+    if(!items.length) return "";
+    const d = items.filter(i => state[i.id]).length;
+    return '<span class="chip"><span class="sw" style="background:' + t.sw + '"></span>' + t.label + '<span class="n">' + d + '/' + items.length + '</span></span>';
+  }).join("");
+
+  // Weeks
+  const weeksEl = document.getElementById("weeks");
+  weeksEl.innerHTML = WEEKS.map(w => {
+    const start = new Date(w.due); start.setDate(start.getDate()-6);
+    const isCurrent = now >= new Date(start.toDateString()) && now <= new Date(w.due + DUE_TIME);
+    const counted = w.items.filter(i => i.type !== "milestone");
+    const wdone = counted.filter(i => state[i.id]).length;
+    const allDone = counted.length > 0 && wdone === counted.length;
+
+    const items = w.items.map(it => {
+      if(it.type === "milestone"){
+        return '<div class="note-item"><span class="diamond">◇</span>' +
+          '<span class="ntxt">' + esc(it.title) + '</span>' +
+          '<span class="ndue mono">' + esc(fmtDue(it.due)) + '</span></div>';
+      }
+      const t = TYPE[it.type];
+      const isDone = !!state[it.id];
+      const overdue = !isDone && it.due < tk;
+      return '<div class="item ' + (isDone?'done':'') + '" style="--c:' + t.c + '" data-id="' + esc(it.id) + '">' +
+        '<div class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
+        '<div class="meta"><div class="ttl">' + esc(it.title) + '</div>' +
+        '<div class="tags"><span class="typetag">' + t.label + '</span>' +
+        (it.pts ? '<span class="pts mono">' + it.pts + ' pts</span>' : '') +
+        (overdue ? '<span class="overdue mono">OVERDUE</span>' : '') +
+        '</div></div></div>';
+    }).join("");
+
+    const wkLabel = "Week " + w.wk;
+    return '<section class="week' + (isCurrent?' current':'') + '">' +
+      '<div class="week-head"><span class="wk-no">' + esc(wkLabel) + '</span>' +
+      '<span class="wk-topic">' + esc(w.topic) + '</span>' +
+      (isCurrent ? '<span class="now-tag">This week</span>' : '') +
+      '<span class="wk-prog">' + (allDone ? '✓' : wdone + '/' + counted.length) + '</span>' +
+      '<span class="wk-due mono">due ' + esc(fmtDue(w.due)) + '</span></div>' +
+      items + '</section>';
+  }).join("");
+
+  weeksEl.querySelectorAll(".item[data-id]").forEach(el => {
+    el.addEventListener("click", () => toggle(el.dataset.id));
+  });
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  if(confirm("Clear every checkmark? This can't be undone.")){
+    state = {};
+    save();
+    render();
+  }
+});
+
+load();
+</script>
+</body>
+</html>
