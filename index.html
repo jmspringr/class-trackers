@@ -27,6 +27,9 @@
   h1 em{font-style:italic;font-weight:500;color:var(--ink-soft)}
   .sub{color:var(--ink-soft);font-size:.95rem;margin-top:10px;margin-bottom:30px}
 
+  .term-label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:22px 0 12px}
+  .term-label:first-of-type{margin-top:0}
+
   a.card{
     display:block;text-decoration:none;color:inherit;
     background:var(--card);border:1px solid var(--line);border-radius:16px;
@@ -50,9 +53,9 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">Stark State College &middot; Summer 2026</div>
+  <div class="eyebrow">Stark State College</div>
   <h1>Class <em>trackers</em></h1>
-  <p class="sub">Your semester at a glance. Tap a course to open its tracker.</p>
+  <p class="sub">Your courses at a glance. Tap a course to open its tracker.</p>
 
   <div id="cards"></div>
 
@@ -61,8 +64,9 @@
 
 <script>
 const COURSES = [
-  { code:"MTH 118", name:"Quantitative Reasoning", file:"mth118-tracker.html", key:"mth118-progress", total:56, c:"#2f8568" },
-  { code:"PSY 121", name:"General Psychology", file:"psy121-tracker.html", key:"psy121-progress", total:30, c:"#9a3b2e" },
+  { code:"CIS 221", name:"Generating Reports for Decision Making", term:"Fall 2026",   file:"cis221-tracker.html", key:"cis221-progress", total:29, c:"#2f6690" },
+  { code:"MTH 118", name:"Quantitative Reasoning",                 term:"Summer 2026", file:"mth118-tracker.html", key:"mth118-progress", total:56, c:"#2f8568" },
+  { code:"PSY 121", name:"General Psychology",                     term:"Summer 2026", file:"psy121-tracker.html", key:"psy121-progress", total:30, c:"#9a3b2e" },
 ];
 
 function doneCount(key){
@@ -74,7 +78,7 @@ function doneCount(key){
   }catch(e){ return 0; }
 }
 
-const cards = COURSES.map(co=>{
+function cardHTML(co){
   const done = Math.min(doneCount(co.key), co.total);
   const pct = co.total ? Math.round(done/co.total*100) : 0;
   return '<a class="card" href="'+co.file+'" style="--c:'+co.c+'">'
@@ -85,9 +89,17 @@ const cards = COURSES.map(co=>{
     + '<div class="bar"><i style="width:'+pct+'%"></i></div>'
     + '<div class="count">'+done+' of '+co.total+' done</div>'
   + '</a>';
+}
+
+// Group cards under their term heading, preserving COURSES order.
+const seen = [];
+const html = COURSES.map(co=>{
+  let head = "";
+  if(!seen.includes(co.term)){ seen.push(co.term); head = '<div class="term-label">'+co.term+'</div>'; }
+  return head + cardHTML(co);
 }).join("");
 
-document.getElementById("cards").innerHTML = cards;
+document.getElementById("cards").innerHTML = html;
 </script>
 </body>
 </html>
