@@ -83,9 +83,11 @@
   .wk-no{font-family:'Fraunces',serif;font-size:1.12rem;font-weight:600}
   .wk-topic{font-size:.82rem;color:var(--ink-soft);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .wk-due{font-size:.76rem;color:var(--ink-soft);margin-left:auto;letter-spacing:.02em;flex:0 0 auto}
-  .wk-prog{font-size:.74rem;color:var(--ink-soft);font-weight:600;flex:0 0 auto}
+  .wk-prog{font-size:.74rem;color:var(--ink-soft);font-weight:600;flex:0 0 auto;margin-left:auto}
+  .wk-prog + .wk-due{margin-left:10px}
   .now-tag{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#fff;background:var(--accent);padding:3px 8px;border-radius:99px;flex:0 0 auto}
   .week.current .week-head{border-color:var(--accent)}
+  .week.nolab .week-head{border-style:dashed}
 
   .item{
     display:flex;align-items:flex-start;gap:13px;
@@ -166,56 +168,60 @@ const TYPE = {
   project: {label:"Project", c:"var(--proj)",  sw:"#5b54c4"},
 };
 
-// Built from the Fall 2026 course calendar in the WDD224 syllabus.
+// Built from the Fall 2026 course calendar in the WDD224 syllabus (the corrected
+// table): Weeks 3 and 12 have no lab, which shifts every lab after Week 2 down.
 // Labs are due 7:00am on the listed Tuesday; the final project is due Thu 12/10.
+// Item ids are keyed by lab number (not week) so they survive future date shuffles.
 const DUE_TIME = "T07:00:00";
 const WEEKS = [
   {wk:1,  topic:"Hello World! & environment setup", due:"2026-09-01", items:[
-    {id:"w1-setup", type:"setup", title:"Install Visual Studio 2026 (ASP.NET workload)"},
-    {id:"w1-lab",   type:"lab",   title:"Lab 1 — Hello World!"},
-    {id:"w1-note",  type:"milestone", title:"Finish Lab 1 on time or risk being dropped as “Never Attend” — affects financial aid", due:"2026-09-01"},
+    {id:"setup-vs", type:"setup", title:"Install Visual Studio 2026 (ASP.NET workload)"},
+    {id:"lab1",     type:"lab",   title:"Lab 1 — Hello World!"},
+    {id:"note-attend", type:"milestone", title:"Finish Lab 1 on time or risk being dropped as “Never Attend” — affects financial aid", due:"2026-09-01"},
   ]},
   {wk:2,  topic:"ASP.NET basics", due:"2026-09-08", items:[
-    {id:"w2-lab", type:"lab", title:"Lab 2"},
+    {id:"lab2", type:"lab", title:"Lab 2"},
   ]},
-  {wk:3,  topic:"Validation", due:"2026-09-15", items:[
-    {id:"w3-lab", type:"lab", title:"Lab 3 — Validation"},
+  {wk:3,  noLab:true},
+  {wk:4,  topic:"Validation", due:"2026-09-15", items:[
+    {id:"lab3", type:"lab", title:"Lab 3 — Validation"},
   ]},
-  {wk:4,  topic:"Databases", due:"2026-09-22", items:[
-    {id:"w4-lab", type:"lab", title:"Lab 4 — Database"},
+  {wk:5,  topic:"Databases", due:"2026-09-22", items:[
+    {id:"lab4", type:"lab", title:"Lab 4 — Database"},
   ]},
-  {wk:5,  topic:"Entity Framework", due:"2026-09-29", items:[
-    {id:"w5-lab", type:"lab", title:"Lab 5 — Entity Framework"},
+  {wk:6,  topic:"Entity Framework", due:"2026-09-29", items:[
+    {id:"lab5", type:"lab", title:"Lab 5 — Entity Framework"},
   ]},
-  {wk:6,  topic:"SignalR", due:"2026-10-06", items:[
-    {id:"w6-lab", type:"lab", title:"Lab 6 — SignalR"},
+  {wk:7,  topic:"SignalR", due:"2026-10-06", items:[
+    {id:"lab6", type:"lab", title:"Lab 6 — SignalR"},
   ]},
-  {wk:7,  topic:"ASP.NET Core", due:"2026-10-13", items:[
-    {id:"w7-lab", type:"lab", title:"Lab 7 — Core"},
+  {wk:8,  topic:"ASP.NET Core", due:"2026-10-13", items:[
+    {id:"lab7", type:"lab", title:"Lab 7 — Core"},
   ]},
-  {wk:8,  topic:"ASP.NET Core", due:"2026-10-20", items:[
-    {id:"w8-lab", type:"lab", title:"Lab 8 — Core"},
+  {wk:9,  topic:"ASP.NET Core", due:"2026-10-20", items:[
+    {id:"lab8", type:"lab", title:"Lab 8 — Core"},
   ]},
-  {wk:9,  topic:"ASP.NET Core", due:"2026-10-27", items:[
-    {id:"w9-lab",  type:"lab", title:"Lab 9 — Core"},
-    {id:"w9-note", type:"milestone", title:"No lab due the week of Nov 3 — catch-up / get-ahead buffer", due:"2026-11-03"},
+  {wk:10, topic:"ASP.NET Core", due:"2026-10-27", items:[
+    {id:"lab9", type:"lab", title:"Lab 9 — Core"},
   ]},
   {wk:11, topic:"Route Parameters", due:"2026-11-10", items:[
-    {id:"w11-lab",  type:"lab", title:"Lab 10 — Route Parameters"},
-    {id:"w11-note", type:"milestone", title:"Last day to withdraw — Mon, Nov 16", due:"2026-11-16"},
+    {id:"lab10", type:"lab", title:"Lab 10 — Route Parameters"},
   ]},
-  {wk:12, topic:"ASP.NET Core Database", due:"2026-11-17", items:[
-    {id:"w12-lab", type:"lab", title:"Lab 11 — ASP.NET Core Database"},
+  {wk:12, noLab:true, items:[
+    {id:"note-withdraw", type:"milestone", title:"Last day to withdraw — Mon, Nov 16", due:"2026-11-16"},
   ]},
-  {wk:13, topic:"Blazor", due:"2026-11-24", items:[
-    {id:"w13-lab", type:"lab", title:"Lab 12 — Blazor"},
+  {wk:13, topic:"ASP.NET Core Database", due:"2026-11-24", items:[
+    {id:"lab11", type:"lab", title:"Lab 11 — ASP.NET Core Database"},
   ]},
-  {wk:"14–15", topic:"Final Project (Finals Week)", due:"2026-12-10", items:[
+  {wk:14, topic:"Blazor", due:"2026-12-01", items:[
+    {id:"lab12", type:"lab", title:"Lab 12 — Blazor"},
+  ]},
+  {wk:15, topic:"Final Project (Finals Week)", due:"2026-12-10", items:[
     {id:"final-proj", type:"project", title:"Final Project"},
   ]},
 ];
 
-const ALL = WEEKS.flatMap(w => w.items).filter(i => i.type !== "milestone");
+const ALL = WEEKS.flatMap(w => (w.items || [])).filter(i => i.type !== "milestone");
 const TOTAL_PTS = ALL.reduce((s,i)=>s+(i.pts||0),0);
 const STORE_KEY = "wdd224-progress";
 let state = {};
@@ -271,13 +277,14 @@ function render(){
   // Next up: first week with an incomplete task whose due date hasn't passed
   let nextWk = null;
   for(const w of WEEKS){
+    if(!w.due) continue;
     const due = new Date(w.due + DUE_TIME);
-    const incomplete = w.items.some(i => i.type !== "milestone" && !state[i.id]);
+    const incomplete = (w.items || []).some(i => i.type !== "milestone" && !state[i.id]);
     if(incomplete && due >= new Date(now.toDateString())){ nextWk = w; break; }
   }
   const nb = document.getElementById("nextBox");
   if(nextWk){
-    const remaining = nextWk.items.filter(i => i.type !== "milestone" && !state[i.id]).length;
+    const remaining = (nextWk.items || []).filter(i => i.type !== "milestone" && !state[i.id]).length;
     const days = Math.ceil((new Date(nextWk.due + DUE_TIME) - now)/86400000);
     const dayTxt = days<=0 ? "due today" : days===1 ? "due tomorrow" : "in " + days + " days";
     nb.innerHTML = '<span class="dot"></span><span class="txt">Next up: <b>' + remaining + ' task' + (remaining>1?'s':'') + '</b> for Week ' + nextWk.wk + ', ' + dayTxt + ' (' + fmtDue(nextWk.due) + ').</span>';
@@ -299,15 +306,21 @@ function render(){
   }).join("");
 
   // Weeks
+  const defaultNote = '<div class="note-item"><span class="diamond">◇</span><span class="ntxt">No lab due this week — catch up or work ahead</span></div>';
   const weeksEl = document.getElementById("weeks");
   weeksEl.innerHTML = WEEKS.map(w => {
-    const start = new Date(w.due); start.setDate(start.getDate()-6);
-    const isCurrent = now >= new Date(start.toDateString()) && now <= new Date(w.due + DUE_TIME);
-    const counted = w.items.filter(i => i.type !== "milestone");
+    const hasDue = !!w.due;
+    const counted = (w.items || []).filter(i => i.type !== "milestone");
     const wdone = counted.filter(i => state[i.id]).length;
     const allDone = counted.length > 0 && wdone === counted.length;
 
-    const items = w.items.map(it => {
+    let isCurrent = false;
+    if(hasDue){
+      const start = new Date(w.due); start.setDate(start.getDate()-6);
+      isCurrent = now >= new Date(start.toDateString()) && now <= new Date(w.due + DUE_TIME);
+    }
+
+    const items = (w.items || []).map(it => {
       if(it.type === "milestone"){
         return '<div class="note-item"><span class="diamond">◇</span>' +
           '<span class="ntxt">' + esc(it.title) + '</span>' +
@@ -325,14 +338,16 @@ function render(){
         '</div></div></div>';
     }).join("");
 
-    const wkLabel = "Week " + w.wk;
-    return '<section class="week' + (isCurrent?' current':'') + '">' +
-      '<div class="week-head"><span class="wk-no">' + esc(wkLabel) + '</span>' +
-      '<span class="wk-topic">' + esc(w.topic) + '</span>' +
+    const body = (w.items && w.items.length) ? items : (w.noLab ? defaultNote : "");
+    const topic = w.noLab ? "No lab this week" : (w.topic || "");
+
+    return '<section class="week' + (isCurrent?' current':'') + (w.noLab?' nolab':'') + '">' +
+      '<div class="week-head"><span class="wk-no">' + esc("Week " + w.wk) + '</span>' +
+      '<span class="wk-topic">' + esc(topic) + '</span>' +
       (isCurrent ? '<span class="now-tag">This week</span>' : '') +
-      '<span class="wk-prog">' + (allDone ? '✓' : wdone + '/' + counted.length) + '</span>' +
-      '<span class="wk-due mono">due ' + esc(fmtDue(w.due)) + '</span></div>' +
-      items + '</section>';
+      (counted.length ? '<span class="wk-prog">' + (allDone ? '✓' : wdone + '/' + counted.length) + '</span>' : '') +
+      (hasDue ? '<span class="wk-due mono">due ' + esc(fmtDue(w.due)) + '</span>' : '') +
+      '</div>' + body + '</section>';
   }).join("");
 
   weeksEl.querySelectorAll(".item[data-id]").forEach(el => {
