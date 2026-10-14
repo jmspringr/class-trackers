@@ -161,8 +161,6 @@
 
 <script>
 const TYPE = {
-  reading:    {label:"Read",    c:"var(--read)",    sw:"#8a7d68"},
-  setup:      {label:"Setup",   c:"var(--setup)",   sw:"#3f7d84"},
   discussion: {label:"Discuss", c:"var(--disc)",    sw:"#3b6ea5"},
   quiz:       {label:"Quiz",    c:"var(--quiz)",    sw:"#b07d1e"},
   project:    {label:"Project", c:"var(--proj)",    sw:"#5b54c4"},
@@ -170,49 +168,40 @@ const TYPE = {
   career:     {label:"Career",  c:"var(--career)",  sw:"#2f8568"},
 };
 
-// Built from the Fall 2026 course calendar in the CSE236 syllabus.
+// Built from the Fall 2026 CSE236 syllabus calendar. Phase 2 (9/15) and Phase 4 (10/13)
+// corrected to the Brightspace dropbox dates; later phases still use syllabus dates.
 // This course runs in 8 phases (not weekly). Each phase's tasks share
 // that phase's due date (11:59pm). Career prep runs all semester.
 const WEEKS = [
   {wk:1, label:"Phase 1", topic:"Week 1 · Introductions & Course Review", start:"2026-08-24", due:"2026-08-30", items:[
-    {id:"p1-review", type:"reading",    title:"Review Start Here & Phase 1 folder"},
-    {id:"p1-read",   type:"reading",    title:"Read Chapter 1"},
-    {id:"p1-setup",  type:"setup",      title:"Set up required software — Visio, Project, Office, Visual Studio"},
     {id:"p1-disc",   type:"discussion", title:"Phase 1 Discussion Forum", pts:20},
     {id:"p1-quiz",   type:"quiz",       title:"Chapter 1 Quiz", pts:30},
   ]},
-  {wk:2, label:"Phase 2", topic:"Weeks 2–3 · Project Overview", start:"2026-08-31", due:"2026-09-13", items:[
-    {id:"p2-read", type:"reading", title:"Read Chapter 2 & Materials folder"},
+  {wk:2, label:"Phase 2", topic:"Weeks 2–3 · Project Overview", start:"2026-08-31", due:"2026-09-15", items:[
     {id:"p2-proj", type:"project", title:"Project Phase 2 — Project Overview", pts:50},
     {id:"p2-quiz", type:"quiz",    title:"Chapter 2 Quiz", pts:30},
   ]},
-  {wk:3, label:"Phase 3", topic:"Weeks 4–5 · Requirements Analysis", start:"2026-09-14", due:"2026-09-27", items:[
-    {id:"p3-read", type:"reading", title:"Read Chapter 3 & Materials folder"},
+  {wk:3, label:"Phase 3", topic:"Weeks 4–5 · Requirements Analysis", start:"2026-09-16", due:"2026-09-27", items:[
     {id:"p3-proj", type:"project", title:"Project Phase 3 — Requirements Analysis", pts:50},
     {id:"p3-quiz", type:"quiz",    title:"Chapter 3 Quiz", pts:30},
   ]},
-  {wk:4, label:"Phase 4", topic:"Weeks 6–7 · Diagrams & Flowcharts", start:"2026-09-28", due:"2026-10-08", items:[
-    {id:"p4-read", type:"reading", title:"Read Chapter 7 & Materials folder"},
+  {wk:4, label:"Phase 4", topic:"Weeks 6–7 · Diagrams & Flowcharts", start:"2026-09-28", due:"2026-10-13", items:[
     {id:"p4-proj", type:"project", title:"Project Phase 4 — Diagrams & Flowcharts", pts:50},
     {id:"p4-quiz", type:"quiz",    title:"Chapter 7 Quiz", pts:30},
   ]},
-  {wk:5, label:"Phase 5", topic:"Weeks 8–9 · Systems Design & Implementation", start:"2026-10-09", due:"2026-10-22", items:[
-    {id:"p5-read", type:"reading", title:"Read Chapters 11 & 12 & Materials folder"},
+  {wk:5, label:"Phase 5", topic:"Weeks 8–9 · Systems Design & Implementation", start:"2026-10-14", due:"2026-10-22", items:[
     {id:"p5-proj", type:"project", title:"Project Phase 5 — Systems Design & Implementation", pts:50},
     {id:"p5-quiz", type:"quiz",    title:"Chapters 11 & 12 Quiz", pts:30},
   ]},
   {wk:6, label:"Phase 6", topic:"Weeks 10–11 · Testing", start:"2026-10-23", due:"2026-11-08", items:[
-    {id:"p6-read", type:"reading", title:"Review Materials folder (no chapter reading)"},
     {id:"p6-proj", type:"project", title:"Project Phase 6 — Testing", pts:50},
   ]},
   {wk:7, label:"Phase 7", topic:"Weeks 12–13 · User Guide & Deployment", start:"2026-11-09", due:"2026-11-22", items:[
-    {id:"p7-read",     type:"reading",   title:"Read Chapter 8 & Materials folder"},
     {id:"p7-proj",     type:"project",   title:"Project Phase 7 — User Guide & Deployment", pts:50},
     {id:"p7-quiz",     type:"quiz",      title:"Chapter 8 Quiz", pts:30},
     {id:"p7-withdraw", type:"milestone", title:"Last day to withdraw — Mon, Nov 16", due:"2026-11-16"},
   ]},
   {wk:8, label:"Phase 8", topic:"Weeks 14–16 · Project Completion", start:"2026-11-23", due:"2026-12-13", items:[
-    {id:"p8-read",  type:"reading",   title:"Review Materials folder (no chapter reading)"},
     {id:"p8-note",  type:"milestone", title:"Submit to the dropbox BEFORE your scheduled presentation", due:"2026-12-13"},
     {id:"p8-final", type:"present",   title:"Final Project Submission & Zoom Presentation", pts:200},
   ]},
