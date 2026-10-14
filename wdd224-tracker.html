@@ -168,10 +168,11 @@ const TYPE = {
   project: {label:"Project", c:"var(--proj)",  sw:"#5b54c4"},
 };
 
-// Built from the Fall 2026 course calendar in the WDD224 syllabus (the corrected
-// table): Weeks 3 and 12 have no lab, which shifts every lab after Week 2 down.
-// Labs are due 7:00am on the listed Tuesday; the final project is due Thu 12/10.
-// Item ids are keyed by lab number (not week) so they survive future date shuffles.
+// Due dates follow each lab's week label in the syllabus (e.g. Lab 6 = W7), not the
+// syllabus's printed dates, which run a week early for Labs 3-9. Week N's lab is due
+// 7:00am on the Tuesday ending that week (Week 1 = 9/1). Weeks 3 and 12 have no lab.
+// The final project is due Thu 12/10. Item ids are keyed by lab number, not week,
+// so saved checkmarks survive date changes.
 const DUE_TIME = "T07:00:00";
 const WEEKS = [
   {wk:1,  topic:"Hello World! & environment setup", due:"2026-09-01", items:[
@@ -183,25 +184,25 @@ const WEEKS = [
     {id:"lab2", type:"lab", title:"Lab 2"},
   ]},
   {wk:3,  noLab:true},
-  {wk:4,  topic:"Validation", due:"2026-09-15", items:[
+  {wk:4,  topic:"Validation", due:"2026-09-22", items:[
     {id:"lab3", type:"lab", title:"Lab 3 — Validation"},
   ]},
-  {wk:5,  topic:"Databases", due:"2026-09-22", items:[
+  {wk:5,  topic:"Databases", due:"2026-09-29", items:[
     {id:"lab4", type:"lab", title:"Lab 4 — Database"},
   ]},
-  {wk:6,  topic:"Entity Framework", due:"2026-09-29", items:[
+  {wk:6,  topic:"Entity Framework", due:"2026-10-06", items:[
     {id:"lab5", type:"lab", title:"Lab 5 — Entity Framework"},
   ]},
-  {wk:7,  topic:"SignalR", due:"2026-10-06", items:[
+  {wk:7,  topic:"SignalR", due:"2026-10-13", items:[
     {id:"lab6", type:"lab", title:"Lab 6 — SignalR"},
   ]},
-  {wk:8,  topic:"ASP.NET Core", due:"2026-10-13", items:[
+  {wk:8,  topic:"ASP.NET Core", due:"2026-10-20", items:[
     {id:"lab7", type:"lab", title:"Lab 7 — Core"},
   ]},
-  {wk:9,  topic:"ASP.NET Core", due:"2026-10-20", items:[
+  {wk:9,  topic:"ASP.NET Core", due:"2026-10-27", items:[
     {id:"lab8", type:"lab", title:"Lab 8 — Core"},
   ]},
-  {wk:10, topic:"ASP.NET Core", due:"2026-10-27", items:[
+  {wk:10, topic:"ASP.NET Core", due:"2026-11-03", items:[
     {id:"lab9", type:"lab", title:"Lab 9 — Core"},
   ]},
   {wk:11, topic:"Route Parameters", due:"2026-11-10", items:[
@@ -220,6 +221,9 @@ const WEEKS = [
     {id:"final-proj", type:"project", title:"Final Project"},
   ]},
 ];
+
+// Attach each week's due date to its items so overdue flags work.
+WEEKS.forEach(w => (w.items || []).forEach(i => { if(!i.due && w.due) i.due = w.due; }));
 
 const ALL = WEEKS.flatMap(w => (w.items || [])).filter(i => i.type !== "milestone");
 const TOTAL_PTS = ALL.reduce((s,i)=>s+(i.pts||0),0);
@@ -274,13 +278,13 @@ function render(){
   document.getElementById("barFill").style.width = pct + "%";
   document.getElementById("ptsN").textContent = TOTAL_PTS ? (donePts + " / " + TOTAL_PTS + " graded pts") : "";
 
-  // Next up: first week with an incomplete task whose due date hasn't passed
+  // Next up: first week with an incomplete task whose deadline hasn't passed
   let nextWk = null;
   for(const w of WEEKS){
     if(!w.due) continue;
     const due = new Date(w.due + DUE_TIME);
     const incomplete = (w.items || []).some(i => i.type !== "milestone" && !state[i.id]);
-    if(incomplete && due >= new Date(now.toDateString())){ nextWk = w; break; }
+    if(incomplete && due > now){ nextWk = w; break; }
   }
   const nb = document.getElementById("nextBox");
   if(nextWk){
@@ -305,6 +309,15 @@ function render(){
     return '<span class="chip"><span class="sw" style="background:' + t.sw + '"></span>' + t.label + '<span class="n">' + d + '/' + items.length + '</span></span>';
   }).join("");
 
+  // Current week = the week whose deadline is the next one after now
+  // (runs from the previous Tuesday 7:00am up to this week's Tuesday 7:00am).
+  const curWk = WEEKS.find(w => {
+    if(!w.due) return false;
+    const end = new Date(w.due + DUE_TIME);
+    const start = new Date(end); start.setDate(start.getDate()-7);
+    return now > start && now <= end;
+  });
+
   // Weeks
   const defaultNote = '<div class="note-item"><span class="diamond">◇</span><span class="ntxt">No lab due this week — catch up or work ahead</span></div>';
   const weeksEl = document.getElementById("weeks");
@@ -313,12 +326,7 @@ function render(){
     const counted = (w.items || []).filter(i => i.type !== "milestone");
     const wdone = counted.filter(i => state[i.id]).length;
     const allDone = counted.length > 0 && wdone === counted.length;
-
-    let isCurrent = false;
-    if(hasDue){
-      const start = new Date(w.due); start.setDate(start.getDate()-6);
-      isCurrent = now >= new Date(start.toDateString()) && now <= new Date(w.due + DUE_TIME);
-    }
+    const isCurrent = w === curWk;
 
     const items = (w.items || []).map(it => {
       if(it.type === "milestone"){
@@ -328,7 +336,7 @@ function render(){
       }
       const t = TYPE[it.type];
       const isDone = !!state[it.id];
-      const overdue = !isDone && it.due < tk;
+      const overdue = !isDone && it.due && new Date(it.due + DUE_TIME) < now;
       return '<div class="item ' + (isDone?'done':'') + '" style="--c:' + t.c + '" data-id="' + esc(it.id) + '">' +
         '<div class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
         '<div class="meta"><div class="ttl">' + esc(it.title) + '</div>' +
