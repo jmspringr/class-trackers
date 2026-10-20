@@ -161,7 +161,6 @@
 
 <script>
 const TYPE = {
-  reading:    {label:"Read",    c:"var(--read)",  sw:"#8a7d68"},
   quiz:       {label:"Quiz",    c:"var(--quiz)",  sw:"#b07d1e"},
   discussion: {label:"Discuss", c:"var(--disc)",  sw:"#3b6ea5"},
   setup:      {label:"Setup",   c:"var(--setup)", sw:"#6b5b95"},
@@ -172,68 +171,57 @@ const TYPE = {
 
 // Built from the Fall 2026 course calendar in the syllabus.
 // All tasks in a week share that week's Tuesday due date (11:59pm).
+// Weeks 8+ shifted one week later to match Brightspace (midterm due Oct 27).
 const WEEKS = [
   {wk:1,  topic:"Course Review", due:"2026-09-01", items:[
-    {id:"w1-review",   type:"reading",    title:"Review Start Here page & Week 1 materials"},
     {id:"w1-quiz",     type:"quiz",       title:"Syllabus Quiz"},
     {id:"w1-intro",    type:"discussion", title:"Introduction Post"},
     {id:"w1-software", type:"setup",      title:"Software Access & Review (Appendices)"},
   ]},
   {wk:2,  topic:"Ch 1 — Specify the Question", due:"2026-09-08", items:[
-    {id:"w2-read", type:"reading", title:"Read Chapter 1 & materials"},
     {id:"w2-lab",  type:"lab",     title:"Chapter 1 Lab", pts:50},
   ]},
   {wk:3,  topic:"Ch 2 — Obtain the Data", due:"2026-09-15", items:[
-    {id:"w3-read", type:"reading", title:"Read Chapter 2 & materials"},
     {id:"w3-lab",  type:"lab",     title:"Chapter 2 Lab", pts:50},
     {id:"w3-note", type:"milestone", title:"“Never Attends” reported this week — make sure Week 1 is done"},
   ]},
   {wk:4,  topic:"Ch 3 — Analyze: Basic Statistics & Tools", due:"2026-09-22", items:[
-    {id:"w4-read", type:"reading", title:"Read Chapter 3 & materials"},
     {id:"w4-lab",  type:"lab",     title:"Chapter 3 Lab", pts:50},
   ]},
   {wk:5,  topic:"Ch 4 — Analyze: Exploratory Analytics", due:"2026-09-29", items:[
-    {id:"w5-read", type:"reading", title:"Read Chapter 4 & materials"},
     {id:"w5-lab",  type:"lab",     title:"Chapter 4 Lab", pts:50},
     {id:"w5-note", type:"milestone", title:"Early Alerts reported this week"},
   ]},
   {wk:6,  topic:"Ch 5 — Analyze: Confirmatory Analytics", due:"2026-10-06", items:[
-    {id:"w6-read", type:"reading", title:"Read Chapter 5 & materials"},
     {id:"w6-lab",  type:"lab",     title:"Chapter 5 Lab", pts:50},
   ]},
   {wk:7,  topic:"Ch 6 — Report Results: Data Visualization", due:"2026-10-13", items:[
-    {id:"w7-read", type:"reading", title:"Read Chapter 6 & materials"},
     {id:"w7-lab",  type:"lab",     title:"Chapter 6 Lab", pts:50},
   ]},
-  {wk:8,  topic:"Midterm Exam (covers Ch 1–6)", due:"2026-10-20", items:[
+  {wk:8,  topic:"Midterm Exam (covers Ch 1–6)", due:"2026-10-27", items:[
     {id:"w8-exam", type:"exam", title:"Midterm Exam (Ch 1–6)", pts:100},
     {id:"w8-note", type:"milestone", title:"Midterm grades reported this week"},
   ]},
-  {wk:9,  topic:"Ch 7 — Marketing Analytics", due:"2026-10-27", items:[
-    {id:"w9-read", type:"reading", title:"Read Chapter 7 & materials"},
+  {wk:9,  topic:"Ch 7 — Marketing Analytics", due:"2026-11-03", items:[
     {id:"w9-lab",  type:"lab",     title:"Chapter 7 Lab", pts:50},
   ]},
-  {wk:10, topic:"Ch 8 — Accounting Analytics", due:"2026-11-03", items:[
-    {id:"w10-read", type:"reading", title:"Read Chapter 8 & materials"},
+  {wk:10, topic:"Ch 8 — Accounting Analytics", due:"2026-11-10", items:[
     {id:"w10-lab",  type:"lab",     title:"Chapter 8 Lab", pts:50},
   ]},
-  {wk:11, topic:"Ch 9 — Financial Analytics", due:"2026-11-10", items:[
-    {id:"w11-read", type:"reading", title:"Read Chapter 9 & materials"},
+  {wk:11, topic:"Ch 9 — Financial Analytics", due:"2026-11-17", items:[
     {id:"w11-lab",  type:"lab",     title:"Chapter 9 Lab", pts:50},
+    {id:"w11-note", type:"milestone", title:"Last day to withdraw — Mon, Nov 16"},
   ]},
-  {wk:12, topic:"Ch 10 — Operations Analytics", due:"2026-11-17", items:[
-    {id:"w12-read", type:"reading", title:"Read Chapter 10 & materials"},
+  {wk:12, topic:"Ch 10 — Operations Analytics", due:"2026-11-24", items:[
     {id:"w12-lab",  type:"lab",     title:"Chapter 10 Lab", pts:50},
-    {id:"w12-note", type:"milestone", title:"Last day to withdraw — Mon, Nov 16"},
   ]},
-  {wk:13, topic:"Ch 11 — Advanced Business Analytics", due:"2026-11-24", items:[
-    {id:"w13-read", type:"reading", title:"Read Chapter 11 & materials"},
+  {wk:13, topic:"Ch 11 — Advanced Business Analytics", due:"2026-12-01", items:[
     {id:"w13-lab",  type:"lab",     title:"Chapter 11 Lab", pts:50},
   ]},
-  {wk:14, topic:"Using the SOAR to Put It All Together", due:"2026-12-01", items:[
+  {wk:14, topic:"Using the SOAR to Put It All Together", due:"2026-12-08", items:[
     {id:"w14-proj", type:"project", title:"Final Project", pts:50},
   ]},
-  {wk:"15–16", topic:"Final Exam", due:"2026-12-08", items:[
+  {wk:"15–16", topic:"Final Exam", due:"2026-12-15", items:[
     {id:"w16-exam", type:"exam", title:"Final Exam", pts:100},
   ]},
 ];
